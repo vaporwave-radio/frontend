@@ -10,30 +10,36 @@ export default function App() {
   const { addToQueue } = useAudioQueue();
 
   useEffect(() => {
-    const fetchMessages = async () => {
+    // 1. Сначала инициализируем диалог
+    const initDialog = async () => {
       try {
-        const res = await fetch(BACKEND_URL);
-        if (!res.ok) throw new Error('Network response was not ok');
+        await fetch('http://localhost:5000/signal', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'start' })
+        });
         
-        const newMessages = await res.json();
-        if (Array.isArray(newMessages)) {
-          newMessages.forEach((msg) => {
-            if (!messages.some(m => m.text === msg.text)) { // Проверка на дубликаты
-              setMessages((prev) => [...prev, msg]);
-              if (msg.audioUrl) {
-                addToQueue(msg);
-              }
-            }
-          });
-        }
+        // 2. После успешной инициализации начинаем опрос сообщений
+        const pollMessages = async () => {
+          try {
+            const res = await fetch('http://localhost:5000/messages');
+            const data = await res.json();
+            setMessages(prev => [...prev, ...data]);
+          } catch (err) {
+            console.error('Polling error:', err);
+          }
+        };
+        
+        const interval = setInterval(pollMessages, 3000);
+        return () => clearInterval(interval);
+        
       } catch (err) {
-        console.error('Failed to fetch messages', err);
+        console.error('Init failed:', err);
       }
     };
-
-    const interval = setInterval(fetchMessages, FETCH_INTERVAL);
-    return () => clearInterval(interval);
-  }, [messages, addToQueue]);
+  
+    initDialog();
+  }, []);
 
   return (
     <div className="min-h-screen bg-pink-100 flex justify-center items-start py-12">

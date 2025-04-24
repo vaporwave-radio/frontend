@@ -6,13 +6,18 @@ export default function InputBox({ onSend }) {
 
   const handleSend = async () => {
     if (!text.trim()) return;
-    await fetch(SEND_TOPIC_URL, {
-      method: 'POST',
-      body: JSON.stringify({ topic: text }),
-      headers: { 'Content-Type': 'application/json' }
-    });
-    onSend({ sender: "You", text });
-    setText('');
+    
+    try {
+      await fetch('http://localhost:5000/send-topic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic: text })
+      });
+      onSend(text);
+      setText('');
+    } catch (err) {
+      console.error('Send failed:', err);
+    }
   };
 
   return (

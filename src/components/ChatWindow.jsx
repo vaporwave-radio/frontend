@@ -8,7 +8,7 @@ export default function ChatWindow({ messages }) {
             <div className="mt-1">
               <audio 
                 controls 
-                src={msg.audioUrl} ф
+                src={msg.audioUrl} 
                 className="w-full"
                 onPlay={(e) => e.target.volume = 0.5}
               />

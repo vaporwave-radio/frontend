@@ -37,7 +37,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-pink-100 flex justify-center items-start py-12">
-      <div className="bg-winbg border-2 border-windark shadow-[inset_1px_1px_#ffffff,inset_-1px_-1px_#808080] p-4 w-[500px] font-win95">
+      <div className="bg-winbg border-2 border-windark shadow-[inset_1px_1px_#ffffff,inset_-1px_-1px_#808080] p-4 w-[800px] font-win95">
         <div className="bg-winbg border-2 border-windark shadow-[inset_1px_1px_#ffffff,inset_-1px_-1px_#808080] p-1 mb-4 text-center">
           <h1 className="text-xl font-bold">📻 Vaporwave Radio Online</h1>
         </div>

@@ -1,29 +1,39 @@
+import { useEffect, useState } from 'react';
+import { BACKEND_URL, FETCH_INTERVAL } from './constants';
 import ChatWindow from './components/ChatWindow';
 import InputBox from './components/InputBox';
 import Controls from './components/Controls';
 import { useAudioQueue } from './hooks/useAudioQueue';
-import { useEffect, useState } from 'react';
-import { BACKEND_URL, FETCH_INTERVAL } from './constants';
 
 export default function App() {
   const [messages, setMessages] = useState([]);
   const { addToQueue } = useAudioQueue();
 
   useEffect(() => {
-    const interval = setInterval(async () => {
+    const fetchMessages = async () => {
       try {
         const res = await fetch(BACKEND_URL);
+        if (!res.ok) throw new Error('Network response was not ok');
+        
         const newMessages = await res.json();
-        newMessages.forEach((msg) => {
-          setMessages((prev) => [...prev, msg]);
-          if (msg.audioUrl) addToQueue(msg);
-        });
+        if (Array.isArray(newMessages)) {
+          newMessages.forEach((msg) => {
+            if (!messages.some(m => m.text === msg.text)) { // Проверка на дубликаты
+              setMessages((prev) => [...prev, msg]);
+              if (msg.audioUrl) {
+                addToQueue(msg);
+              }
+            }
+          });
+        }
       } catch (err) {
         console.error('Failed to fetch messages', err);
       }
-    }, FETCH_INTERVAL);
+    };
+
+    const interval = setInterval(fetchMessages, FETCH_INTERVAL);
     return () => clearInterval(interval);
-  }, []);
+  }, [messages, addToQueue]);
 
   return (
     <div className="min-h-screen bg-pink-100 flex justify-center items-start py-12">
@@ -38,4 +48,3 @@ export default function App() {
     </div>
   );
 }
-

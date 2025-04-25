@@ -1,6 +1,6 @@
 # Vaporwave Radio Frontend
 
-## How to build and run
+## How to build and run (OUTDATED, see the backend repo for up-to-date instructions)
 1. Run in project root:
 ```
 docker build -t vaporwave-radio .
